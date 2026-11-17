@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Kids Points">
+<meta name="theme-color" content="#fff7ec" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#17151a" media="(prefers-color-scheme: dark)">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="manifest" href="manifest.json">
+<title>Kids Points</title>
+<style>
+:root{
+  --bg:#fff7ec; --card:#ffffff; --ink:#2b2430; --muted:#8a7f8f; --line:#efe4d6;
+  --k1:#e4572e; --k1bg:#fdebe4; --k2:#1f8f84; --k2bg:#e0f4f1;
+  --accent:#5b3fd6; --good:#1f8f4e; --bad:#c9372c; --shadow:0 2px 10px rgba(60,40,20,.08);
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#17151a; --card:#232028; --ink:#f3eef6; --muted:#a297a8; --line:#35303b;
+    --k1:#ff8a66; --k1bg:#3a2520; --k2:#4fd1c2; --k2bg:#16302d;
+    --accent:#a48cff; --good:#5fd08a; --bad:#ff7b6e; --shadow:none;
+  }
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font:16px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  -webkit-user-select:none;user-select:none;overscroll-behavior:none}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;padding:0}
+input,select{font:inherit;color:inherit}
+#app{max-width:520px;margin:0 auto;min-height:100%;
+  padding:calc(env(safe-area-inset-top) + 14px) 16px calc(env(safe-area-inset-bottom) + 86px)}
+header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px}
+h1{font-size:26px;margin:0;font-weight:800;letter-spacing:-.5px}
+.sub{color:var(--muted);font-size:14px}
+.card{background:var(--card);border-radius:20px;padding:18px;margin-bottom:14px;box-shadow:var(--shadow);border:1px solid var(--line)}
+.kid{position:relative;overflow:hidden}
+.kid .bar{position:absolute;left:0;top:0;bottom:0;width:6px}
+.kid .top{display:flex;justify-content:space-between;align-items:center}
+.kid .name{font-weight:700;font-size:18px}
+.pill{font-size:13px;padding:4px 10px;border-radius:99px;font-weight:600}
+.kid .bal{font-size:46px;font-weight:800;letter-spacing:-1.5px;line-height:1.1;margin-top:8px;font-variant-numeric:tabular-nums}
+.kid .bal small{font-size:16px;font-weight:600;color:var(--muted);letter-spacing:0;margin-left:4px}
+.kid .rs{color:var(--muted);font-size:14px;margin-bottom:12px}
+.row{display:flex;gap:10px}
+.btn{flex:1;padding:13px 10px;border-radius:14px;font-weight:700;font-size:15px;background:var(--bg);border:1px solid var(--line)}
+.btn:active{transform:scale(.97)}
+.btn.primary{background:var(--accent);color:#fff;border-color:transparent}
+@media (prefers-color-scheme: dark){.btn.primary{color:#17151a}}
+.btn.danger{color:var(--bad)}
+.btn.big{width:100%;padding:16px;font-size:17px;border-radius:16px}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);
+  display:flex;padding-bottom:env(safe-area-inset-bottom);z-index:5}
+nav button{flex:1;padding:10px 0 8px;font-size:12px;font-weight:600;color:var(--muted)}
+nav button .ic{display:block;font-size:22px;line-height:1.2}
+nav button.on{color:var(--accent)}
+.chips{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.chip{padding:8px 14px;border-radius:99px;background:var(--card);border:1px solid var(--line);font-size:14px;font-weight:600}
+.chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.list{padding:4px 16px}
+.item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);width:100%;text-align:left}
+.item:last-child{border-bottom:0}
+.item .dot{width:10px;height:10px;border-radius:50%;flex:none}
+.item .mid{flex:1;min-width:0}
+.item .t{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item .d{font-size:13px;color:var(--muted)}
+.item .p{font-weight:800;font-variant-numeric:tabular-nums}
+.plus{color:var(--good)} .minus{color:var(--bad)}
+.empty{text-align:center;color:var(--muted);padding:30px 10px}
+h2{font-size:14px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin:18px 4px 8px}
+.set{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--line);width:100%;text-align:left}
+.set:last-child{border-bottom:0}
+.set .v{color:var(--muted)}
+/* sheets */
+#veil{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:10;display:none;align-items:flex-end;justify-content:center}
+#veil.show{display:flex}
+#sheet{background:var(--card);width:100%;max-width:520px;border-radius:24px 24px 0 0;
+  padding:18px 18px calc(env(safe-area-inset-bottom) + 18px);max-height:92vh;overflow:auto;-webkit-overflow-scrolling:touch}
+#sheet h3{margin:0 0 14px;font-size:20px}
+label.f{display:block;font-size:13px;font-weight:600;color:var(--muted);margin:12px 0 6px}
+.inp{width:100%;padding:13px;border-radius:12px;border:1px solid var(--line);background:var(--bg);font-size:17px;-webkit-appearance:none;appearance:none;min-height:50px}
+.seg{display:flex;gap:8px}
+.seg button{flex:1;padding:12px;border-radius:12px;border:2px solid var(--line);font-weight:700}
+.krow{border:1px solid var(--line);border-radius:16px;padding:14px;margin-top:12px}
+.krow .h{display:flex;justify-content:space-between;align-items:center}
+.krow .num{font-size:34px;font-weight:800;font-variant-numeric:tabular-nums}
+.krow .num small{font-size:15px;color:var(--muted);font-weight:600}
+.step{display:flex;align-items:center;gap:10px;margin:8px 0}
+.step button{width:46px;height:46px;border-radius:50%;background:var(--bg);border:1px solid var(--line);font-size:24px;font-weight:700;flex:none}
+input[type=range]{flex:1;height:34px;accent-color:var(--accent);min-width:0}
+.quick{display:flex;gap:6px}
+.quick button{flex:1;padding:9px 0;border-radius:10px;background:var(--bg);border:1px solid var(--line);font-weight:700;font-size:14px}
+.prow{margin-top:12px;padding-top:10px;border-top:1px solid var(--line);position:relative}
+.prow .pn{font-weight:700;font-size:14px;color:var(--muted)}
+.prow .pv{position:absolute;right:0;top:8px;font-size:24px;font-weight:800;font-variant-numeric:tabular-nums}
+.clr{width:100%;margin-top:12px;padding:10px;font-size:14px}
+.hint{font-size:13px;color:var(--muted);margin-top:6px}
+.err{color:var(--bad);font-size:14px;margin-top:10px;min-height:20px}
+/* pin */
+#pin{position:fixed;inset:0;background:var(--bg);z-index:20;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px}
+#pin.show{display:flex}
+#pin .ttl{font-size:20px;font-weight:700;margin-bottom:6px;text-align:center}
+#pin .msg{color:var(--muted);min-height:22px;margin-bottom:14px;text-align:center}
+.dots{display:flex;gap:16px;margin-bottom:28px}
+.dots i{width:16px;height:16px;border-radius:50%;border:2px solid var(--ink)}
+.dots i.f{background:var(--ink)}
+.pad{display:grid;grid-template-columns:repeat(3,76px);gap:14px}
+.pad button{width:76px;height:76px;border-radius:50%;background:var(--card);border:1px solid var(--line);font-size:28px;font-weight:600}
+.pad button.x{background:none;border:0;font-size:15px;color:var(--muted)}
+.pad button:active{background:var(--line)}
+#toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 96px);transform:translateX(-50%);background:var(--ink);color:var(--bg);
+  padding:10px 18px;border-radius:99px;font-weight:600;font-size:14px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:30;white-space:nowrap}
+#toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<nav>
+  <button data-tab="home"><span class="ic">🏠</span>Home</button>
+  <button data-tab="history"><span class="ic">📜</span>History</button>
+  <button data-tab="settings"><span class="ic">⚙️</span>Settings</button>
+</nav>
+<div id="veil"><div id="sheet"></div></div>
+<div id="pin"></div>
+<div id="toast"></div>
+<input type="file" id="file" accept=".json,application/json" style="display:none">
+
+<script>
+(function(){
+'use strict';
+var KIDS=[{id:'shreenikha',name:'Shreenikha',c:'--k1',bg:'--k1bg'},{id:'sharvya',name:'Sharvya',c:'--k2',bg:'--k2bg'}];
+var MAX_PARENT=50, MAX_DAILY=100, PARENTS=[{id:'d',name:'Dad'},{id:'m',name:'Mom'}], PTS_PER_RUPEE=4, KEY='kidsPoints.v1';
+var state=load(), tab='home', filter='all', histLimit=100, unlocked=false;
+var $=function(id){return document.getElementById(id);};
+
+function load(){
+  try{var s=JSON.parse(localStorage.getItem(KEY));if(s&&Array.isArray(s.entries))return s;}catch(e){}
+  return {entries:[],pin:null};
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){toast('Could not save!');}}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+function pad2(n){return (n<10?'0':'')+n;}
+function today(){var d=new Date();return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
+function niceDate(s){var p=s.split('-');var d=new Date(+p[0],+p[1]-1,+p[2]);
+  if(s===today())return 'Today';
+  return d.toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short',year:'numeric'});}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function num(n){return Number(n).toLocaleString('en-IN');}
+function rupees(p){var r=p/PTS_PER_RUPEE;return (r<0?'-':'')+'₹'+Math.abs(r).toLocaleString('en-IN',{maximumFractionDigits:2});}
+function kid(id){for(var i=0;i<KIDS.length;i++)if(KIDS[i].id===id)return KIDS[i];return KIDS[0];}
+function dadOf(e){return typeof e.dad==='number'?e.dad:e.points;}
+function momOf(e){return typeof e.mom==='number'?e.mom:0;}
+function signed(e){return (e.type==='gift'||e.type==='reset')?-e.points:e.points;}
+function balance(k){var t=0;state.entries.forEach(function(e){if(e.kid===k)t+=signed(e);});return t;}
+function findDaily(k,date){for(var i=0;i<state.entries.length;i++){var e=state.entries[i];if(e.kid===k&&e.type==='daily'&&e.date===date)return e;}return null;}
+function findOpening(k){for(var i=0;i<state.entries.length;i++){var e=state.entries[i];if(e.kid===k&&e.type==='opening')return e;}return null;}
+function toast(m){var t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(function(){t.classList.remove('show');},1800);}
+
+/* ---------- PIN ---------- */
+function hashPin(p){var h=5381;for(var i=0;i<p.length;i++)h=((h<<5)+h+p.charCodeAt(i))|0;return 'h'+h;}
+function pinPrompt(title,onDone,onCancel){
+  var val='',box=$('pin');
+  function draw(msg){
+    var dots='';for(var i=0;i<4;i++)dots+='<i class="'+(i<val.length?'f':'')+'"></i>';
+    var keys='';[1,2,3,4,5,6,7,8,9].forEach(function(n){keys+='<button data-k="'+n+'">'+n+'</button>';});
+    keys+='<button class="x" data-k="c">Cancel</button><button data-k="0">0</button><button class="x" data-k="d">⌫</button>';
+    box.innerHTML='<div class="ttl">'+esc(title)+'</div><div class="msg">'+esc(msg||'')+'</div><div class="dots">'+dots+'</div><div class="pad">'+keys+'</div>';
+  }
+  box.onclick=function(ev){
+    var b=ev.target.closest('button');if(!b)return;var k=b.getAttribute('data-k');
+    if(k==='c'){box.classList.remove('show');if(onCancel)onCancel();return;}
+    if(k==='d'){val=val.slice(0,-1);draw();return;}
+    if(val.length<4)val+=k;draw();
+    if(val.length===4){var v=val;val='';setTimeout(function(){
+      var r=onDone(v);
+      if(r===true)box.classList.remove('show');else draw(r||'');
+    },120);}
+  };
+  draw();box.classList.add('show');
+}
+function guard(fn){
+  if(!state.pin||unlocked){fn();return;}
+  pinPrompt('Enter parent PIN',function(v){
+    if(hashPin(v)===state.pin){unlocked=true;setTimeout(fn,0);return true;}
+    return 'Wrong PIN, try again';
+  });
+}
+function guardAlways(fn){
+  if(!state.pin){alert('Set a parent PIN first (Settings > Parent PIN). Reset needs the PIN every time.');return;}
+  pinPrompt('Enter PIN to reset points',function(v){
+    if(hashPin(v)===state.pin){setTimeout(fn,0);return true;}
+    return 'Wrong PIN, try again';
+  });
+}
+function setPin(){
+  var first=null;
+  pinPrompt('Choose a 4-digit PIN',function(v){
+    if(first===null){first=v;return 'Enter it again to confirm';}
+    if(v!==first){first=null;return 'Did not match. Choose a PIN';}
+    state.pin=hashPin(v);save();unlocked=true;render();toast('PIN set');return true;
+  });
+}
+document.addEventListener('visibilitychange',function(){if(document.hidden)unlocked=false;});
+
+/* ---------- sheets ---------- */
+function openSheet(html){$('sheet').innerHTML=html;$('veil').classList.add('show');}
+function closeSheet(){$('veil').classList.remove('show');$('sheet').innerHTML='';$('sheet').onclick=null;$('sheet').oninput=null;}
+$('veil').addEventListener('click',function(e){if(e.target===$('veil'))closeSheet();});
+
+/* daily points for both kids */
+function dailySheet(date){
+  var vals={};
+  function loadVals(){KIDS.forEach(function(k){var e=findDaily(k.id,date);
+    vals[k.id]=e?{d:dadOf(e),m:momOf(e),has:true}:{d:null,m:null,has:false};});}
+  function sum(k){var v=vals[k];return (v.d||0)+(v.m||0);}
+  function draw(){
+    var h='<h3>Daily points</h3><label class="f">Date</label><input class="inp" type="date" id="dDate" value="'+date+'" max="'+today()+'">';
+    KIDS.forEach(function(k){
+      var v=vals[k.id];
+      h+='<div class="krow"><div class="h"><b style="color:var('+k.c+')">'+k.name+'</b>'+
+        '<span class="num"><span id="t_'+k.id+'">'+((v.d==null&&v.m==null)?'–':sum(k.id))+'</span> <small>/ '+MAX_DAILY+'</small></span></div>';
+      PARENTS.forEach(function(p){
+        var x=v[p.id];
+        h+='<div class="prow"><span class="pn">'+p.name+'</span><span class="pv" id="n_'+k.id+p.id+'">'+(x==null?'–':x)+'</span>'+
+          '<div class="step"><button data-step="-1" data-kid="'+k.id+'" data-p="'+p.id+'">−</button>'+
+          '<input type="range" min="0" max="'+MAX_PARENT+'" step="1" value="'+(x==null?0:x)+'" data-kid="'+k.id+'" data-p="'+p.id+'" id="r_'+k.id+p.id+'">'+
+          '<button data-step="1" data-kid="'+k.id+'" data-p="'+p.id+'">+</button></div>'+
+          '<div class="quick">'+[0,10,20,30,40,50].map(function(q){return '<button data-q="'+q+'" data-kid="'+k.id+'" data-p="'+p.id+'">'+q+'</button>';}).join('')+'</div></div>';
+      });
+      if(v.has)h+='<button class="btn danger clr" data-clear="'+k.id+'">Clear this day for '+k.name+'</button>';
+      h+='</div>';
+    });
+    h+='<div class="hint">Each parent gives 0–'+MAX_PARENT+', so a child can earn up to '+MAX_DAILY+' a day. A score left at “–” counts as 0 when saved; a child with both at “–” is not changed.</div><div class="err" id="dErr"></div>'+
+       '<div class="row"><button class="btn" data-act="cancel">Cancel</button><button class="btn primary" data-act="save">Save</button></div>';
+    openSheet(h);
+    var sh=$('sheet');
+    function setV(id,p,n){n=Math.max(0,Math.min(MAX_PARENT,n));vals[id][p]=n;$('n_'+id+p).textContent=n;$('r_'+id+p).value=n;$('t_'+id).textContent=sum(id);}
+    sh.oninput=function(ev){var t=ev.target;
+      if(t.type==='range')setV(t.getAttribute('data-kid'),t.getAttribute('data-p'),+t.value);
+      if(t.id==='dDate'&&t.value){date=t.value;loadVals();draw();}
+    };
+    sh.onclick=function(ev){var b=ev.target.closest('button');if(!b)return;var id=b.getAttribute('data-kid'),p=b.getAttribute('data-p');
+      if(b.hasAttribute('data-step'))setV(id,p,(vals[id][p]==null?0:vals[id][p])+(+b.getAttribute('data-step')));
+      else if(b.hasAttribute('data-q'))setV(id,p,+b.getAttribute('data-q'));
+      else if(b.hasAttribute('data-clear')){var cid=b.getAttribute('data-clear');
+        if(confirm('Remove '+kid(cid).name+'’s points for '+niceDate(date)+'?')){
+          state.entries=state.entries.filter(function(x){return !(x.kid===cid&&x.type==='daily'&&x.date===date);});
+          save();loadVals();draw();render();}}
+      else if(b.getAttribute('data-act')==='cancel')closeSheet();
+      else if(b.getAttribute('data-act')==='save'){
+        if(date>today()){$('dErr').textContent='Date cannot be in the future.';return;}
+        var n=0;KIDS.forEach(function(k){var v=vals[k.id];if(v.d==null&&v.m==null)return;n++;
+          var dd=v.d||0,mm=v.m||0,e=findDaily(k.id,date);
+          if(e){e.dad=dd;e.mom=mm;e.points=dd+mm;}
+          else state.entries.push({id:uid(),kid:k.id,type:'daily',date:date,dad:dd,mom:mm,points:dd+mm,note:'',ts:Date.now()});
+        });
+        if(!n){$('dErr').textContent='Set points for at least one child.';return;}
+        save();closeSheet();render();toast('Points saved');
+      }
+    };
+  }
+  loadVals();draw();
+}
+
+/* single entry: gift / opening / edit existing */
+function entrySheet(o){
+  var e=o.id?state.entries.filter(function(x){return x.id===o.id;})[0]:null;
+  var d=e?{kid:e.kid,type:e.type,date:e.date,points:e.points,note:e.note||''}:{kid:o.kid,type:o.type,date:today(),points:'',note:''};
+  var titles={gift:e?'Edit gift':'Subtract for a gift',opening:'Opening balance',daily:'Edit daily points'};
+  function draw(){
+    var k=kid(d.kid);
+    var h='<h3>'+titles[d.type]+'</h3>';
+    if(!e&&d.type==='gift'){
+      h+='<label class="f">Child</label><div class="seg">'+KIDS.map(function(x){var on=x.id===d.kid;
+        return '<button data-kid="'+x.id+'" style="'+(on?'border-color:var('+x.c+');background:var('+x.bg+');color:var('+x.c+')':'')+'">'+x.name+'</button>';}).join('')+'</div>';
+    }else h+='<div class="pill" style="display:inline-block;background:var('+k.bg+');color:var('+k.c+')">'+k.name+'</div>';
+    if(d.type==='gift')h+='<label class="f">What was the gift?</label><input class="inp" id="eNote" maxlength="60" placeholder="e.g. Toy" value="'+esc(d.note)+'">';
+    h+='<label class="f">'+(d.type==='gift'?'Points to subtract':d.type==='daily'?'Points (0–'+MAX_DAILY+')':'Points the child already has')+'</label>'+
+       '<input class="inp" id="ePts" type="number" inputmode="numeric" pattern="[0-9]*" min="0" placeholder="0" value="'+esc(d.points)+'">'+
+       '<div class="hint" id="eRs"></div>';
+    if(d.type!=='opening')h+='<label class="f">Date</label><input class="inp" type="date" id="eDate" value="'+d.date+'" max="'+today()+'">';
+    h+='<div class="err" id="eErr"></div><div class="row">';
+    if(e)h+='<button class="btn danger" data-act="del">Delete</button>';
+    h+='<button class="btn" data-act="cancel">Cancel</button><button class="btn primary" data-act="save">Save</button></div>';
+    openSheet(h);rs();
+    var sh=$('sheet');
+    sh.oninput=function(ev){var t=ev.target;
+      if(t.id==='ePts'){d.points=t.value;rs();}
+      if(t.id==='eNote')d.note=t.value;
+      if(t.id==='eDate'&&t.value)d.date=t.value;
+    };
+    sh.onclick=function(ev){var b=ev.target.closest('button');if(!b)return;
+      if(b.hasAttribute('data-kid')){d.kid=b.getAttribute('data-kid');draw();return;}
+      var a=b.getAttribute('data-act');
+      if(a==='cancel')closeSheet();
+      if(a==='del'){if(confirm('Delete this entry?')){state.entries=state.entries.filter(function(x){return x.id!==e.id;});save();closeSheet();render();toast('Deleted');}}
+      if(a==='save'){
+        var p=Number(d.points),err='';
+        if(d.points===''||!isFinite(p)||p<0||Math.floor(p)!==p)err='Enter a whole number of points.';
+        else if(d.type==='gift'&&p===0)err='Enter the points to subtract.';
+        else if(d.type==='daily'&&p>MAX_DAILY)err='Daily points cannot be more than '+MAX_DAILY+'.';
+        else if(d.type!=='opening'&&d.date>today())err='Date cannot be in the future.';
+        else if(d.type==='daily'){var ex=findDaily(d.kid,d.date);if(ex&&(!e||ex.id!==e.id))err='Points already entered for that date.';}
+        if(err){$('eErr').textContent=err;return;}
+        var note=(d.note||'').trim();
+        if(e){e.points=p;e.date=d.date;e.note=note;}
+        else state.entries.push({id:uid(),kid:d.kid,type:d.type,date:d.date,points:p,note:note,ts:Date.now()});
+        save();closeSheet();render();
+        toast(d.type==='gift'?'−'+num(p)+' points for '+kid(d.kid).name:'Saved');
+      }
+    };
+  }
+  function rs(){var p=Number(d.points);$('eRs').textContent=(d.points!==''&&isFinite(p)&&p>0)?num(p)+' points = '+rupees(p)+'  ('+PTS_PER_RUPEE+' points = ₹1)':'';}
+  draw();
+}
+
+/* ---------- views ---------- */
+function label(e){return e.type==='reset'?'Reset to 0':e.type==='daily'?'Daily points':e.type==='opening'?'Opening balance':'Gift'+(e.note?': '+e.note:'');}
+function viewHome(){
+  var t=today(),d=new Date();
+  var h='<header><h1>Kids Points</h1><span class="sub">'+d.toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'})+'</span></header>';
+  KIDS.forEach(function(k){
+    var b=balance(k.id),td=findDaily(k.id,t);
+    h+='<div class="card kid"><div class="bar" style="background:var('+k.c+')"></div>'+
+      '<div class="top"><span class="name">'+k.name+'</span>'+
+      '<span class="pill" style="background:var('+k.bg+');color:var('+k.c+')">'+(td?'Today: '+td.points+' / '+MAX_DAILY:'Today: not entered')+'</span></div>'+
+      '<div class="bal'+(b<0?' minus':'')+'">'+num(b)+'<small>points</small></div>'+
+      '<div class="rs">worth '+rupees(b)+'</div>'+
+      '<div class="row"><button class="btn" data-gift="'+k.id+'">🎁 Subtract gift</button></div></div>';
+  });
+  h+='<button class="btn primary big" data-daily="1">＋ Enter daily points</button>';
+  return h;
+}
+function viewHistory(){
+  var h='<header><h1>History</h1></header><div class="chips"><button class="chip'+(filter==='all'?' on':'')+'" data-f="all">All</button>'+
+    KIDS.map(function(k){return '<button class="chip'+(filter===k.id?' on':'')+'" data-f="'+k.id+'">'+k.name+'</button>';}).join('')+'</div>';
+  var list=state.entries.filter(function(e){return filter==='all'||e.kid===filter;})
+    .sort(function(a,b){return a.date<b.date?1:a.date>b.date?-1:(b.ts||0)-(a.ts||0);});
+  if(!list.length)return h+'<div class="empty">Nothing here yet.</div>';
+  h+='<div class="card list">';
+  list.slice(0,histLimit).forEach(function(e){var k=kid(e.kid),s=signed(e);
+    h+='<button class="item" data-edit="'+e.id+'"><span class="dot" style="background:var('+k.c+')"></span>'+
+      '<span class="mid"><div class="t">'+esc(label(e))+'</div><div class="d">'+k.name+' · '+(e.type==='opening'?'Starting points':niceDate(e.date))+(e.type==='daily'?' · Dad '+dadOf(e)+', Mom '+momOf(e):'')+'</div></span>'+
+      '<span class="p '+(s<0?'minus':'plus')+'">'+(s<0?'−':'+')+num(Math.abs(s))+'</span></button>';
+  });
+  h+='</div>';
+  if(list.length>histLimit)h+='<button class="btn big" data-more="1">Show older entries</button>';
+  return h+'<div class="hint" style="text-align:center">Tap an entry to edit or delete it.</div>';
+}
+function viewSettings(){
+  var h='<header><h1>Settings</h1></header><h2>Opening balance</h2><div class="card list">';
+  KIDS.forEach(function(k){var o=findOpening(k.id);
+    h+='<button class="set" data-open="'+k.id+'"><span>'+k.name+'</span><span class="v">'+(o?num(o.points)+' points':'Not set')+' ›</span></button>';});
+  h+='</div><h2>Parent PIN</h2><div class="card list">';
+  if(state.pin)h+='<button class="set" data-pin="change"><span>Change PIN</span><span class="v">›</span></button>'+
+    '<button class="set" data-pin="remove"><span style="color:var(--bad)">Remove PIN</span><span class="v">›</span></button>';
+  else h+='<button class="set" data-pin="set"><span>Set a PIN</span><span class="v">Off ›</span></button>';
+  h+='</div><div class="hint">With a PIN, anyone can see the points but only parents can change them. There is no way to recover a forgotten PIN, so keep a backup.</div>'+
+    '<h2>Backup</h2><div class="card list"><button class="set" data-bk="export"><span>Save a backup file</span><span class="v">›</span></button>'+
+    '<button class="set" data-bk="import"><span>Restore from backup</span><span class="v">›</span></button></div>'+
+    '<div class="hint">All data is stored only on this phone. Save a backup now and then (to Files, WhatsApp or email).</div>'+
+    '<h2>Reset points</h2><div class="card list">'+KIDS.map(function(k){return '<button class="set" data-reset="'+k.id+'"><span style="color:var(--bad)">Reset '+k.name+' to 0</span><span class="v">'+num(balance(k.id))+' ›</span></button>';}).join('')+'<button class="set" data-reset="all"><span style="color:var(--bad)">Reset both to 0</span><span class="v">›</span></button></div>'+'<div class="hint">Reset adds an entry that brings the balance to 0. Your history is kept, and you can undo a reset by deleting it in History.</div>'+'<h2>Rules</h2><div class="card"><div>Up to '+MAX_DAILY+' points per child per day (Dad '+MAX_PARENT+' + Mom '+MAX_PARENT+')</div><div class="sub">'+PTS_PER_RUPEE+' points = ₹1 · '+state.entries.length+' entries saved</div></div>';
+  return h;
+}
+function render(){
+  $('app').innerHTML=tab==='home'?viewHome():tab==='history'?viewHistory():viewSettings();
+  Array.prototype.forEach.call(document.querySelectorAll('nav button'),function(b){b.classList.toggle('on',b.getAttribute('data-tab')===tab);});
+}
+
+/* ---------- reset ---------- */
+function resetPoints(which){
+  var ids=which==='all'?KIDS.map(function(k){return k.id;}):[which];
+  var todo=ids.filter(function(id){return balance(id)!==0;});
+  if(!todo.length){toast('Already at 0');return;}
+  var names=todo.map(function(id){return kid(id).name;}).join(' and ');
+  if(!confirm('Reset '+names+' to 0 points?'))return;
+  if(!confirm('Are you sure? This sets '+names+' to 0.'))return;
+  todo.forEach(function(id){state.entries.push({id:uid(),kid:id,type:'reset',date:today(),points:balance(id),note:'',ts:Date.now()});});
+  save();render();toast('Reset to 0');
+}
+
+/* ---------- backup ---------- */
+function exportData(){
+  var name='kids-points-backup-'+today()+'.json',text=JSON.stringify({app:'kids-points',version:1,exported:new Date().toISOString(),entries:state.entries},null,1);
+  try{
+    var f=new File([text],name,{type:'application/json'});
+    if(navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f],title:'Kids Points backup'}).catch(function(){});return;}
+  }catch(e){}
+  var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:'application/json'}));a.download=name;
+  document.body.appendChild(a);a.click();a.remove();toast('Backup downloaded');
+}
+$('file').addEventListener('change',function(){
+  var f=this.files[0];this.value='';if(!f)return;
+  var r=new FileReader();
+  r.onload=function(){
+    try{
+      var d=JSON.parse(r.result),ok=d&&Array.isArray(d.entries)&&d.entries.every(function(e){
+        return e&&typeof e.kid==='string'&&/^(daily|gift|opening|reset)$/.test(e.type)&&/^\d{4}-\d\d-\d\d$/.test(e.date)&&typeof e.points==='number'&&(e.points>=0||e.type==='reset');});
+      if(!ok)throw 0;
+      if(!confirm('Replace everything on this phone with the '+d.entries.length+' entries in this backup?'))return;
+      state.entries=d.entries.map(function(e){return {id:e.id||uid(),kid:e.kid,type:e.type,date:e.date,points:e.points,note:String(e.note||''),ts:e.ts||0};});
+      save();render();toast('Backup restored');
+    }catch(e){alert('That file is not a Kids Points backup.');}
+  };
+  r.readAsText(f);
+});
+
+/* ---------- events ---------- */
+document.querySelector('nav').addEventListener('click',function(ev){var b=ev.target.closest('button');if(!b)return;tab=b.getAttribute('data-tab');histLimit=100;render();window.scrollTo(0,0);});
+$('app').addEventListener('click',function(ev){
+  var b=ev.target.closest('button');if(!b)return;var a=function(n){return b.getAttribute(n);};
+  if(a('data-daily'))guard(function(){dailySheet(today());});
+  else if(a('data-gift'))guard(function(){entrySheet({kid:a('data-gift'),type:'gift'});});
+  else if(a('data-f')){filter=a('data-f');render();}
+  else if(a('data-more')){histLimit+=200;render();}
+  else if(a('data-edit'))guard(function(){var en=state.entries.filter(function(x){return x.id===a('data-edit');})[0];if(!en)return;if(en.type==='daily')dailySheet(en.date);else if(en.type==='reset'){if(confirm('Undo this reset? The '+num(en.points)+' points will come back.')){state.entries=state.entries.filter(function(x){return x.id!==en.id;});save();render();toast('Reset undone');}}else entrySheet({id:en.id});});
+  else if(a('data-open'))guard(function(){var o=findOpening(a('data-open'));entrySheet(o?{id:o.id}:{kid:a('data-open'),type:'opening'});});
+  else if(a('data-pin')==='set')setPin();
+  else if(a('data-pin')==='change')guard(setPin);
+  else if(a('data-pin')==='remove')guard(function(){if(confirm('Remove the PIN? Anyone will be able to change points.')){state.pin=null;save();render();toast('PIN removed');}});
+  else if(a('data-reset'))guardAlways(function(){resetPoints(a('data-reset'));});
+  else if(a('data-bk')==='export')guard(exportData);
+  else if(a('data-bk')==='import')guard(function(){$('file').click();});
+});
+
+render();
+if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(function(){});
+if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(function(){});
+})();
+</script>
+</body>
+</html>
